@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Beyond.Entities\Beyond.Entities.csproj" />
     <ProjectReference Include="..\Beyond.IntegrationServices\Beyond.IntegrationServices.csproj" />
   </ItemGroup>
 

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Beyond.Business;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -11,31 +13,37 @@ namespace BeyondWebApi.Controllers
     [Route("[controller]")]
     public class ProductController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
         private readonly ILogger<ProductController> _logger;
+        ProductsBusiness products = new ProductsBusiness();
 
         public ProductController(ILogger<ProductController> logger)
         {
             _logger = logger;
         }
 
-        [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpPost]
+        public JsonResult GetProducts()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            var jsonResult = string.Empty;
+            try
             {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
-        }
+                var apiRresult = products.GetAllProducts();
+                return new JsonResult(new
+                {
+                    StatusCode = StatusCodes.Status200OK,
+                    Result = apiRresult
+                }); ;
 
-        public JsonResult MyProperty { get; set; }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return new JsonResult(null)
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+            finally { }
+        }
     }
 }
